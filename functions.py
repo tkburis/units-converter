@@ -12,19 +12,28 @@ class Functions:
     }
 
     def __init__(self, inputentry, outputentry):
+        self.unit_outputs = None
         self.inputentry = inputentry
         self.outputentry = outputentry
 
     def get_arg(self):
         try:
-            arg = int(self.inputentry.get())
+            arg = float(self.inputentry.get())
         except ValueError:
             arg = 0
         return arg
 
-    def update_output(self, arg):
-        self.outputentry.delete(0, END)
-        self.outputentry.insert(0, arg)
+    def update_output(self, arg, output):
+        output.delete(0, END)
+        output.insert(0, arg)
 
-    def conv(self, units):
-        self.update_output(round(self.get_arg() * self.conv_factors[units], 2))
+    def conv(self, units, output=None):
+        output = output if output is not None else self.outputentry
+        self.update_output(round(self.get_arg() * self.conv_factors[units], 2), output)
+
+    def input_tracer(self, var, idx, mode):
+        if self.unit_outputs is None:
+            print("Something's gone terribly wrong...")
+            return
+        for units, unit_output in self.unit_outputs.items():
+            self.conv(units, unit_output)
